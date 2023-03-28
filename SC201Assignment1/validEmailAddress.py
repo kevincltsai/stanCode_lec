@@ -8,7 +8,7 @@ address classifier. You will use a given
 weight vector to classify what is the percentage
 of correct classification.
 
-Accuracy of this model: TODO:
+Accuracy of this model: 0.65384615
 """
 
 import numpy as np
@@ -52,8 +52,8 @@ def main():
 		
 		#print('email :', maybe_email)
 		#print(' feature :', feature_vector)		
-		print('i :', i ,' cp:', cp)
-	print("correct :", answer)
+		#print('i :', i ,' cp:', cp)
+	#print("correct :", answer)
 	print("accurary :", answer / len(maybe_email_list))	
 		#print("maybe_email:", maybe_email, " feature_vector :", feature_vector)
 		
@@ -74,28 +74,23 @@ def feature_extractor(maybe_email):
 				feature_vector[i] = 1 if '.' not in maybe_email.split('@')[0] else 0
 		elif i == 2: #Some strings before '@'
 			if feature_vector[0]:
-   				feature_vector[i] = 1 if bool(maybe_email.split('@')[0]) else 0
+				feature_vector[i] = 1 if bool(maybe_email.split('@')[0]) else 0
 		elif i == 3: #Some strings after '@'
 			if feature_vector[0]:
-   				feature_vector[i] = 1 if bool(maybe_email.split('@')[1]) else 0
+				feature_vector[i] = 1 if bool(maybe_email.split('@')[1]) else 0
 		elif i == 4: #There is '.' after '@'
 			if feature_vector[0]:
-   				feature_vector[i] = 1 if any('.' in x for x in maybe_email.split('@')[1:]) else 0
+				feature_vector[i] = 1 if any('.' in x for x in maybe_email.split('@')[1:]) else 0
 		elif i == 5: # There is no white space
-			#if feature_vector[0]:
-   			feature_vector[i] = 0 if any(char.isspace() for char in maybe_email) else 1
+			feature_vector[i] = 0 if any(char.isspace() for char in maybe_email) else 1
 		elif i == 6: # Ends with '.com'
-			#if feature_vector[0]:
-   			feature_vector[i] = 1 if bool(maybe_email.endswith('.com')) else 0
+			feature_vector[i] = 1 if bool(maybe_email.endswith('.com')) else 0
 		elif i == 7: # Ends with '.edu'
-			#if feature_vector[0]:
-   			feature_vector[i] = 1 if bool(maybe_email.endswith('.edu')) else 0
+			feature_vector[i] = 1 if bool(maybe_email.endswith('.edu')) else 0
 		elif i == 8: # ends with '.tw'
-			#if feature_vector[0]:
-   			feature_vector[i] = 1 if bool(maybe_email.endswith('.tw')) else 0
+			feature_vector[i] = 1 if bool(maybe_email.endswith('.tw')) else 0
 		elif i == 9: # Length > 10
-			#if feature_vector[0]:
-   			feature_vector[i] = 1 if len(maybe_email) > 10 else 0
+			feature_vector[i] = 1 if len(maybe_email) > 10 else 0
 				
 		
 			
