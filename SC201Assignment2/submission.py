@@ -65,18 +65,14 @@ def learnPredictor(trainExamples: List[Tuple[Any, int]], validationExamples: Lis
         #G.D for LR : w = w - a(h-y)x
         for t in trainExamples:
             y = 1 if t[1] == 1 else 0
-
             x = extractWordFeatures(t[0])
-            h = 1/(1 + math.exp(-1 * dotProduct(weights,x)))
-            
+            h = 1/(1 + math.exp(-1 * dotProduct(weights,x)))           
             x_n = {d: x.get(d,0) * (h-y) for d in x}
             increment(weights, -alpha, x_n)
 
         def predictor(a, w = weights):
-            p = 1/(1 + math.exp(-1 * dotProduct(w,extractWordFeatures(a))))
-            result = 1 if p >= 0.5 else -1
-            return result
-            
+            return 1 if 1/(1 + math.exp(-1 * dotProduct(w,extractWordFeatures(a)))) >= 0.5 else -1
+
         print ( "Training Error : (", e, " epoch): ", evaluatePredictor(trainExamples,predictor))
         print ( "Validation Error : (", e, " epoch): ", evaluatePredictor(validationExamples,predictor))
         
@@ -110,7 +106,7 @@ def generateDataset(numExamples: int, weights: WeightVector) -> List[Example]:
         phi = {k: weights.get(k,0) for k in random.sample(weights.keys(), random.randrange(1, 1+ len(weights.keys())))}
         
         h = 1/(1+math.exp(-1*dotProduct(weights,phi)))
-        y = 1 if h>= 0 else -1
+        y = 1 if h>= 0.5 else -1
 
         return phi, y
 
