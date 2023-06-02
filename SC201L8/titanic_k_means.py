@@ -27,13 +27,11 @@ def main():
     feature_names = ['Pclass', 'Age', 'Sex', 'SibSp', 'Parch', 'Fare', 'Embarked']
     x_train = data[feature_names]
 
-    # Construct K Means
-    ###################
-    #                 #
-    #      TODO:      #
-    #                 #
-    ###################
 
+    # Construct K Means
+    kmeans = cluster.KMeans(n_clusters=2)
+    kmeans.fit(x_train)
+    print(kmeans.cluster_centers_)
 
 def data_preprocess(filename, mode='Train'):
     """

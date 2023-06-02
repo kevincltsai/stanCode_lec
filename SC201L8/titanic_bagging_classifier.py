@@ -50,7 +50,8 @@ def main():
     #     :TODO       #
     #                 #
     ###################
-
+    prediction = bagging_classifier.predict(x_test)
+    out_file(prediction, 'bagging_d_tree.csv')
 
 def data_preprocess(filename, mode='Train'):
     """

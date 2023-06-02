@@ -12,10 +12,35 @@ def k_means(points, centroids, num_iters):
 	:param num_iters: int, the number of iterations to run k-means algorithm
 	:return: centroids: List[Tuple], containing K number of new centroids after learning
 	"""
-	raise Exception('NOT IMPLEMENTED YET...')
+	#raise Exception('NOT IMPLEMENTED YET...')
 
+	assignments = [-1] * len(points)
 
+	for iter in range(num_iters):
+		centroids_d = defaultdict(list)
+		for i in range(len(points)):
+			x, y  = points[i]
+			dist_list = []
+			for c in range(len(centroids)):
+				cx, cy = centroids[c]
+				dist = math.sqrt((x - cx)**2 + (y - cy)**2)
+				dist_list.append((dist,c))
+			_, best_c = min(dist_list)
+			assignments[i] = best_c
+			centroids_d[best_c].append(points[i])
+			# re-assign new controids
 
+		new_centroids = []
+		for c, lst in sorted(centroids_d.items()):
+				
+			avg_x = sum(ele[0] for ele in lst) / len(lst)
+			avg_y = sum(ele[1] for ele in lst) / len(lst)
+			new_centroids.append((avg_x, avg_y))
+
+		if centroids_d == new_centroids:
+			break
+		centroids_d = new_centroids
+	return centroids
 ############## DO NOT EDIT THE CODES BELOW THIS LINE ##############
 
 

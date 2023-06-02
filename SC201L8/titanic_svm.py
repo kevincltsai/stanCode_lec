@@ -29,6 +29,10 @@ def main():
     x_train = data[feature_names]
 
     # Construct Support Vector Classifier (SVC)
+    svc = svm.SVC(kernel='poly', C =100)
+    svc_classifier = svc.fit(x_train,y)
+    print('Training Acc:', svc_classifier.score(x_train, y))
+
     ###################
     #                 #
     #     :TODO       #
