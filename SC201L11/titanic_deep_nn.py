@@ -30,6 +30,8 @@ import numpy as np
 # Constants
 TRAIN = 'titanic_data/train.csv'     # This is the filename of interest
 NUM_EPOCHS = 40000                   # This constant controls the total number of epochs
+#NUM_EPOCHS = 1000                  # This constant controls the total number of epochs
+
 ALPHA = 0.01                         # This constant controls the learning rate α
 L = 5                                # This number controls the number of layers in NN
 NODES = {                            # This Dict[str: int] controls the number of nodes in each layer
@@ -59,6 +61,20 @@ def main():
     #                                  #
     ####################################
 
+    weights, biases = neural_network(X, Y)
+    
+    # The last forward prop
+	
+    A = X
+    for i in range(1, L+1):
+        A = weights['W' + str(i)].T.dot(A) + biases['B'+str(i)]
+        A = np.maximum(0,A)
+	
+    H = 1 / (1+np.exp(-A))
+    predictions = np.where(H>0.5,1,0)
+    acc = np.equal(predictions, Y)
+    num_acc = np.sum(acc)
+    print('Training Acc:', num_acc/m)
 
 def normalize(X):
     """
@@ -81,25 +97,84 @@ def neural_network(X, Y):
                                      value is the corresponding float
     """
     np.random.seed(1)
-    weights = {}
-    biases = {}
-
+ 
     # Initialize all the weights and biases
     #####################################
     #                                   #
     #               TODO:               #
     #                                   #
     #####################################
+    
 
+
+    print_every = 1000
+    _,m = X.shape
+    weights = {}
+    biases = {}
+
+    for i in range(1, L + 1): #{1,2,3,4,5,6}
+        weights['W'+str(i)] = np.random.rand(NODES['N' + str(i-1)], NODES['N'+str(i)]) - 0.5
+        biases['B'+str(i)] = np.random.rand(NODES['N'+str(i)],1) - 0.5
+
+
+    k_lst = {}
+    a_lst = {'A0':X}
+
+    # W > K > A
+    #NUM_EPOCHS = 10000
     for epoch in range(NUM_EPOCHS):
         # Forward Pass
         # TODO:
-
+        for i in range(1, L+1): #{1,2,3,4,5}
+            #dim check @ i  = 1
+            # W1(6,5).T, A0 = (6,714) => (5,714) B1 = (5,1)
+            k_lst['K'+str(i)] = np.dot(weights['W'+ str(i)].T,a_lst['A'+str(i-1)]) + biases['B' + str(i)]
+            if i <= 4:
+                a_lst['A'+str(i)] = np.maximum(0,k_lst['K' + str(i)])
+        
+        #i stops at 5        
+        #k_lst['K'+str(i)] = np.dot(weights['W'+ str(i)].T,a_lst['A'+str(i-1)]) + biases['B' + str(i)]
+        scores = k_lst['K'+str(i)]
+        H = 1 / (1 + np.exp(-scores))
+                
+        #print(H)
+        J = 1/m * np.sum(-(Y * np.log(H) + (1-Y) * np.log(1-H)))
+        #print(J)  
+        if epoch % print_every == 0:
+            #continue
+            print('epoch :', epoch , ' Cost :', J, ' m:', m)
         # Backward Pass
         # TODO:
 
+        # i = 5
+        dK_lst = {}
+        dW_lst = {}
+        dA_lst = {}
+        dB_lst = {}
+
+        dK_lst['dK5'] = 1/m * np.sum(H-Y, axis=0, keepdims = True)
+        dW_lst['dW5'] = np.dot(a_lst['A'+str(i-1)], dK_lst['dK'+str(i)].T)
+        dB_lst['dB5'] = np.sum(dK_lst['dK'+str(i)], axis = 1, keepdims=True)
+
+        for i in reversed(range(1,5)):
+            #i starts from 4 to 1
+            
+            dA_lst['dA' + str(i)] = np.dot(weights['W'+str(i+1)], dK_lst['dK'+str(i+1)])
+            dK_lst['dK' + str(i)] = dA_lst['dA'+str(i)] * np.where(k_lst['K'+str(i)]>0,1,0)
+            dW_lst['dW' + str(i)] = np.dot(a_lst['A'+str(i-1)], dK_lst['dK' + str(i)].T)
+            dB_lst['dB' + str(i)] = np.sum(dK_lst['dK' + str(i)], axis=1, keepdims= True)
+
         # Updates all the weights and biases
         # TODO:
+        
+        #print(k_lst.keys())
+        for i in range(1, L + 1):
+            weights['W'+ str(i)] -= ALPHA * dW_lst['dW' + str(i)]
+            biases['B' + str(i)] -= ALPHA * dB_lst['dB' + str(i)]
+            k_lst['K' + str(i)] -= ALPHA * dK_lst['dK' + str(i)]
+            if i <= 4 :
+                a_lst['A'+str(i)] -= ALPHA * dA_lst['dA' + str(i)]
+        
         pass
 
     return weights, biases
